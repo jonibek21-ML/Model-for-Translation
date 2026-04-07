@@ -38,7 +38,7 @@ load_dataset("imdb")
 Foydalanilgan model:
 
 ```
-tabularisai/multilingual-sentiment-analysis
+BAAI/bge-reranker-v2-m3
 ```
 
 Model imkoniyatlari:
