@@ -1,133 +1,265 @@
-# Sentiment-Analysis-Model
-# Multilingual Sentiment Analysis (IMDB Dataset)
+# 🌍 Transformer Translation Model (Toy Dataset)
 
-## 📌 Loyiha haqida
+Ushbu loyiha **Transformer arxitekturasi** asosida oddiy **toy dataset** yordamida tarjima modelini **0 dan boshlab PyTorch’da implementatsiya qilish** uchun yozildi.
 
-Ushbu loyiha **tabularisai/multilingual-sentiment-analysis** modelidan foydalanib **IMDB movie reviews dataset** asosida sentiment (ijobiy / salbiy) klassifikatsiya qilishni ko‘rsatadi.
+Model quyidagi asosiy qismlardan iborat:
 
-Loyiha maqsadi — Hugging Face Transformers yordamida oddiy va tushunarli **NLP pipeline** qurish.
-
----
-
-## 📂 Dataset
-
-Dataset: **IMDB Movie Reviews**
-
-Xususiyatlari:
-
-* 50,000 ta review
-* 2 ta klass: Positive / Negative
-* Train: 25,000
-* Test: 25,000
-
-Label qiymatlari:
-
-* 0 → Negative
-* 1 → Positive
-
-Dataset yuklash:
-
-```
-load_dataset("imdb")
-```
+* Tokenization
+* Embedding
+* Positional Encoding
+* Encoder
+* Decoder
+* Training pipeline
+* Greedy decoding
+* Attention visualization
 
 ---
 
-## 🧠 Model
+# 📦 Dataset (Toy Translation Data)
 
-Foydalanilgan model:
+Model kichik test dataset ustida ishlaydi.
+
+Misol:
 
 ```
-BAAI/bge-reranker-v2-m3
+hello → salom
+i am student → men talaba
+how are you → qalaysan
 ```
 
-Model imkoniyatlari:
+Dataset maqsadi:
 
-* Ko‘p tillarni qo‘llab-quvvatlaydi
-* Transformer arxitekturasi asosida
-* Sentiment classification uchun tayyor
-* Hugging Face Trainer bilan oson ishlaydi
+* Transformer pipeline tushunish
+* Encoder–Decoder ishlashini ko‘rish
+* Attention mexanizmini vizual tekshirish
 
 ---
 
-## ⚙️ Kutubxonalar
+# 🔤 Tokenization
 
-Kerakli kutubxonalar:
+Matnlar quyidagi bosqichdan o‘tadi:
 
-```
-transformers
+* lowercase qilish
+* split orqali tokenlarga ajratish
+* vocabulary yaratish
+* token → index mapping
 
-datasets
-
-torch
-
-scikit-learn
-```
-
-O‘rnatish:
+Misol:
 
 ```
-pip install transformers datasets torch scikit-learn
+hello world → [2, 5]
+```
+
+Maxsus tokenlar:
+
+```
+<pad>
+<sos>
+<eos>
+<unk>
 ```
 
 ---
 
-## 🔄 Pipeline bosqichlari
+# 🧠 Embedding Layer
 
-Loyiha quyidagi bosqichlardan iborat:
+Har bir token **embedding vector** ga o‘tkaziladi:
 
-1. Dataset yuklash
-2. Tokenization qilish
-3. Modelni yuklash
-4. Training
-5. Evaluation
-6. Prediction
+```
+(token_id) → embedding vector
+```
+
+Embedding dimension:
+
+```
+d_model = 128
+```
+
+Output shape:
+
+```
+(batch_size, seq_len, d_model)
+```
+
+Embedding modelga:
+
+* semantic meaning
+* context learning
+
+imkonini beradi.
 
 ---
 
-## 📊 Training parametrlari (example)
+# 📍 Positional Encoding
+
+Transformer sequence tartibini bilmaydi.
+
+Shuning uchun positional encoding qo‘shiladi:
 
 ```
-learning_rate = 2e-5
-batch_size = 8 yoki 16
-num_train_epochs = 3
+embedding + positional_encoding
 ```
 
-GPU mavjud bo‘lsa natija yanada yaxshi bo‘ladi.
+Bu modelga:
+
+* token order
+* sentence structure
+
+haqida ma'lumot beradi.
+
+Sinusoidal positional encoding ishlatilgan.
 
 ---
 
-## 📈 Baholash (Evaluation)
+# 🏗 Encoder
 
-Asosiy metric:
-
-```
-Accuracy
-```
-
-Qo‘shimcha metriclar:
+Encoder quyidagi qismlardan tashkil topgan:
 
 ```
-Precision
-Recall
-F1-score
+Multi-Head Attention
++
+Add & Norm
++
+Feed Forward Network
++
+Add & Norm
+```
+
+Encoder vazifasi:
+
+```
+source sentence → contextual representation
+```
+
+Output:
+
+```
+(batch_size, src_len, d_model)
 ```
 
 ---
 
-## 🎯 Loyiha orqali o‘rganiladi
+# 🏗 Decoder
 
-Ushbu loyiha orqali:
+Decoder quyidagi bloklardan iborat:
 
-* Transformer bilan ishlash
-* Tokenization jarayoni
-* Hugging Face Trainer ishlatish
-* Sentiment classification pipeline
+```
+Masked Multi-Head Attention
++
+Encoder-Decoder Attention
++
+Feed Forward
+```
 
-kabi ko‘nikmalar hosil qilinadi.
+Decoder vazifasi:
+
+```
+target sentence generation
+```
+
+Decoder oldingi tokenlarga qarab keyingi tokenni predict qiladi.
 
 ---
 
-## ⭐ Xulosa
+# ⚙ Training Pipeline
 
-Bu loyiha NLP boshlovchilar uchun sentiment classification pipeline’ni amaliy tarzda tushunishga yordam beradi.
+Training bosqichlari:
+
+```
+Tokenize
+→ Pad sequence
+→ Embedding
+→ Positional Encoding
+→ Encoder
+→ Decoder
+→ Linear
+→ Softmax
+```
+
+Loss function:
+
+```
+CrossEntropyLoss
+```
+
+Optimizer:
+
+```
+Adam
+```
+
+Teacher forcing ishlatilgan.
+
+---
+
+# 🔍 Greedy Decoding
+
+Inference vaqtida model quyidagi algoritm orqali tarjima qiladi:
+
+```
+<sos>
+↓
+predict next token
+↓
+append token
+↓
+repeat until <eos>
+```
+
+Bu usul:
+
+```
+Greedy Search
+```
+
+deb ataladi.
+
+Har bosqichda eng katta ehtimollikdagi token tanlanadi.
+
+---
+
+# 📊 Attention Visualization
+
+Attention weights vizual ko‘rinishda chiqariladi.
+
+Bu orqali model:
+
+```
+qaysi token qaysi tokenni kuzatyapti
+```
+
+ko‘rish mumkin.
+
+Misol:
+
+```
+hello → salom
+```
+
+attention map orqali token alignment tekshiriladi.
+
+Visualization yordam beradi:
+
+* modelni interpret qilish
+* encoder-decoder bog‘lanishini tushunish
+* training sifatini baholash
+
+---
+
+# 🚀 Model Pipeline Summary
+
+Transformer pipeline:
+
+```
+Input sentence
+→ Tokenization
+→ Embedding
+→ Positional Encoding
+→ Encoder
+→ Decoder
+→ Linear Layer
+→ Softmax
+→ Output sentence
+```
+
+Model kichik dataset ustida ishlaydi va Transformer arxitekturani tushunish uchun educational loyiha sifatida yozilgan.
